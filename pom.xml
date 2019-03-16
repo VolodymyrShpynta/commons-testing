@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.9.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>com.vshpynta</groupId>
+    <artifactId>commons-testing</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <name>Commons Testing :: Root Module</name>
+
+    <modules>
+        <module>mock-web-server</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <compiler.plugin.version>3.7.0</compiler.plugin.version>
+        <lombok.version>1.16.20</lombok.version>
+        <postgres-embedded.version>0.11.0</postgres-embedded.version>
+        <commons-lang3.version>3.7</commons-lang3.version>
+        <commons-io.version>2.6</commons-io.version>
+        <jsonassert.version>1.5.0</jsonassert.version>
+        <commons-logging.version>1.2</commons-logging.version>
+        <assertj-core.version>3.9.1</assertj-core.version>
+        <wiremock-jre8.version>2.21.0</wiremock-jre8.version>
+        <awaitility.version>3.1.0</awaitility.version>
+        <rest-assured.version>2.9.0</rest-assured.version>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${compiler.plugin.version}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
