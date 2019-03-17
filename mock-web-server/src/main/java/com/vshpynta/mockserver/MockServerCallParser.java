@@ -1,6 +1,7 @@
 package com.vshpynta.mockserver;
 
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 /**
  * Reads data from text file into Mock Server model.
  */
+@UtilityClass
 public class MockServerCallParser {
 
     /**
@@ -85,18 +87,18 @@ public class MockServerCallParser {
     );
 
     @SneakyThrows
-    public MockServerCall parseFile(String scenarioFileName, Map<String, Object> context) {
-        return Optional.ofNullable(this.getClass().getClassLoader().getResourceAsStream(scenarioFileName))
+    public static MockServerCall parseFile(String scenarioFileName, Map<String, Object> context) {
+        return Optional.ofNullable(MockServerCallParser.class.getClassLoader().getResourceAsStream(scenarioFileName))
                 .map(is -> parseFile(is, context))
                 .orElseThrow(() -> new IllegalArgumentException("Cannot parse mock server call file: " + scenarioFileName));
     }
 
     @SneakyThrows
-    private MockServerCall parseFile(InputStream scenarioFile, Map<String, Object> context) {
+    private static MockServerCall parseFile(InputStream scenarioFile, Map<String, Object> context) {
         try (Reader reader = new InputStreamReader(scenarioFile)) {
             final Iterator<BiFunction<String, MockServerCall, Result>> parsers = lineParsers.iterator();
             final Iterator<String> lines = Optional.of(reader)
-                    .map(this::readLines)
+                    .map(MockServerCallParser::readLines)
                     .map(list -> prepareLines(list, context))
                     .map(List::iterator)
                     .orElseThrow(() -> new IllegalArgumentException("Cannot parse mock server call file"));
@@ -116,7 +118,7 @@ public class MockServerCallParser {
         }
     }
 
-    private List<String> prepareLines(List<String> lines, Map<String, Object> context) {
+    private static List<String> prepareLines(List<String> lines, Map<String, Object> context) {
         List<String> preparedLines = new ArrayList<>();
         boolean lastEmpty = true;
         for (String line : lines) {
@@ -132,19 +134,19 @@ public class MockServerCallParser {
         return preparedLines;
     }
 
-    private String applyContextParameters(String line, Map<String, Object> context) {
+    private static String applyContextParameters(String line, Map<String, Object> context) {
         for (Map.Entry<String, Object> entry : context.entrySet()) {
             line = line.replace("$" + entry.getKey(), Objects.toString(entry.getValue(), ""));
         }
         return line;
     }
 
-    private String nextLine(Iterator<String> lines) {
+    private static String nextLine(Iterator<String> lines) {
         return lines.hasNext() ? lines.next() : null;
     }
 
     @SneakyThrows
-    private List<String> readLines(Reader reader) {
+    private static List<String> readLines(Reader reader) {
         return IOUtils.readLines(reader);
     }
 

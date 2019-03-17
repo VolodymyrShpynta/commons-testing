@@ -1,7 +1,7 @@
 package com.vshpynta.mockserver;
 
+import com.google.common.collect.ImmutableMap;
 import com.jayway.restassured.response.Response;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -12,10 +12,14 @@ import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 
-public class WiremockMockServerRuleTest {
+public class WireMockServerRuleTest {
+
+    private int newPrice = 99;
 
     @Rule
-    public WiremockMockServerRule rule = new WiremockMockServerRule(5);
+    public WireMockServerRule rule = WireMockServerRule.builder()
+            .placeholdersValues(ImmutableMap.of("new-price-param", newPrice))
+            .build();
 
     @Test
     public void testNoMocks() {
@@ -36,13 +40,9 @@ public class WiremockMockServerRuleTest {
         assertThat(responseBody).isEqualTo("{\"oldPrice\":222,\"newPrice\":1111}");
     }
 
-    //TODO: fix mock parameterization
-    @Ignore
     @Test
     @MockServerScenario("mock/servers/update-price-with-param.txt")
     public void testMockServerRuleWithParameter() {
-        int newPrice = 99;
-        rule.setParameter("new-price-param", newPrice);
         Response response = given()
                 .contentType(JSON)
                 .body("{\"price\":1111}")

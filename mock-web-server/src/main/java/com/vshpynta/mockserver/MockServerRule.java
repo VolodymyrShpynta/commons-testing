@@ -24,12 +24,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import static com.vshpynta.mockserver.MockServerCallParser.parseFile;
+import static com.vshpynta.mockserver.UriParser.parseUriQuery;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
-import static java.util.Collections.emptyMap;
-import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -43,8 +43,6 @@ public class MockServerRule implements TestRule {
     private final Supplier<RestTemplate> supplier;
 
     private MockRestServiceServer mockServer;
-
-    private MockServerCallParser parser = new MockServerCallParser();
 
     private Map<String, MockServerCall> parsedCalls = new HashMap<>();
     private Map<String, Object> parameters = new HashMap<>();
@@ -74,7 +72,7 @@ public class MockServerRule implements TestRule {
     }
 
     private MockServerCall getMockServerCall(String file) {
-        return parsedCalls.computeIfAbsent(file, f -> parser.parseFile(f, parameters));
+        return parsedCalls.computeIfAbsent(file, f -> parseFile(f, parameters));
     }
 
     private void initMockServer() {
@@ -102,8 +100,8 @@ public class MockServerRule implements TestRule {
             assertEquals("Unexpected request host", expectedUri.getHost(), request.getURI().getHost());
             assertEquals("Unexpected request path", expectedUri.getPath(), request.getURI().getPath());
 
-            if (!parseQuery(request.getURI().getQuery()).entrySet()
-                    .containsAll(parseQuery(expectedUri.getQuery()).entrySet())) {
+            if (!parseUriQuery(request.getURI().getQuery()).entrySet()
+                    .containsAll(parseUriQuery(expectedUri.getQuery()).entrySet())) {
                 throw new AssertionError(
                         format("Unexpected request query parameters expected:<%s> but was:<%s>", expectedUri, request.getURI()));
             }
@@ -143,13 +141,6 @@ public class MockServerRule implements TestRule {
         } else {
             MockRestRequestMatchers.content().string(expectedCall.getRequestBody()).match(request);
         }
-    }
-
-    private Map<String, String> parseQuery(String query) {
-        if (query == null) {
-            return emptyMap();
-        }
-        return stream(query.split("&")).collect(toMap(s -> substringBefore(s, "="), s -> substringAfter(s, "=")));
     }
 
     private void validateJsonBody(ClientHttpRequest request, String expectedContent) {
