@@ -40,7 +40,10 @@ public class MockServerRuleTest {
         HttpEntity<String> request = new HttpEntity<>("{\"price\":1111}", headers);
 
         ResponseEntity<String> result = restTemplate.postForEntity("http://test.com/price/update", request, String.class);
-        assertThat(result.getBody()).isEqualTo("{\"oldPrice\":222,\"newPrice\":1111}");
+        assertThat(result.getBody()).isEqualTo("{\n" +
+                "    \"oldPrice\":222,\n" +
+                "    \"newPrice\":1111\n" +
+                "}");
     }
 
     @Test
@@ -55,6 +58,9 @@ public class MockServerRuleTest {
         HttpEntity<String> request = new HttpEntity<>("{\"price\":1111}", headers);
 
         ResponseEntity<String> result = restTemplate.postForEntity("http://test.com/price/update", request, String.class);
-        assertThat(result.getBody()).isEqualTo(format("{\"oldPrice\":222,\"newPrice\":%s}", newPrice));
+        assertThat(result.getBody()).isEqualTo(format("{\n" +
+                "    \"oldPrice\":222,\n" +
+                "    \"newPrice\":%s\n" +
+                "}", newPrice));
     }
 }

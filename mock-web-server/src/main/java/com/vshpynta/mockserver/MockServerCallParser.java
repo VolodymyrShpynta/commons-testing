@@ -9,7 +9,12 @@ import org.springframework.http.HttpStatus;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 import static java.util.Arrays.asList;
@@ -136,7 +141,8 @@ public class MockServerCallParser {
 
     private static String applyContextParameters(String line, Map<String, Object> context) {
         for (Map.Entry<String, Object> entry : context.entrySet()) {
-            line = line.replace("$" + entry.getKey(), Objects.toString(entry.getValue(), ""));
+            line = line.replace("${" + entry.getKey() + "}",
+                    Objects.toString(entry.getValue(), ""));
         }
         return line;
     }

@@ -54,7 +54,10 @@ public class WireMockServerRuleTest {
 
         response.then().statusCode(SC_OK);
         String responseBody = response.getBody().asString();
-        assertThat(responseBody).isEqualTo("{\"oldPrice\":222,\"newPrice\":1111}");
+        assertThat(responseBody).isEqualTo("{\n" +
+                "    \"oldPrice\":222,\n" +
+                "    \"newPrice\":1111\n" +
+                "}");
     }
 
     @Test
@@ -67,6 +70,9 @@ public class WireMockServerRuleTest {
 
         response.then().statusCode(SC_OK);
         String responseBody = response.getBody().asString();
-        assertThat(responseBody).isEqualTo(format("{\"oldPrice\":222,\"newPrice\":%s}", newPrice));
+        assertThat(responseBody).isEqualTo(format("{\n" +
+                "    \"oldPrice\":222,\n" +
+                "    \"newPrice\":%s\n" +
+                "}", newPrice));
     }
 }
