@@ -1,7 +1,6 @@
 package com.vshpynta.mockserver;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,13 +13,8 @@ import org.junit.runners.model.Statement;
 
 import java.util.Map;
 
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static com.jayway.restassured.RestAssured.when;
 import static com.vshpynta.mockserver.WireMockServerConfigurer.mockRequest;
-import static java.lang.String.format;
 import static java.util.Arrays.stream;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
 
 /**
  * JUnit Rule to configure mock mockServer.
@@ -31,8 +25,6 @@ import static org.awaitility.Awaitility.await;
 @Slf4j
 public class WireMockServerRule implements TestRule {
 
-    @Builder.Default
-    private int serviceStartupInitialTimeout = 5;
     @Builder.Default
     private Map<String, Object> placeholdersValues = ImmutableMap.of();
 
@@ -53,7 +45,6 @@ public class WireMockServerRule implements TestRule {
 
     private void configureMockServer(MockServerScenario serverScenario) {
         if (serverScenario != null) {
-            initMockServer();
             stream(serverScenario.value())
                     .forEach(requestToResponseMappingFile -> mockRequest(wireMockServer,
                             requestToResponseMappingFile,
@@ -61,34 +52,9 @@ public class WireMockServerRule implements TestRule {
         }
     }
 
-    private void initMockServer() {
-        wireMockServer = new WireMockServer(wireMockConfig()
-                .dynamicPort()
-                .notifier(new ConsoleNotifier(true)));
-        wireMockServer.start();
-        waitingForServiceStubStart();
-    }
-
-    private void waitingForServiceStubStart() {
-        await().atMost(serviceStartupInitialTimeout, SECONDS)
-                .until(this::isServiceStubAlreadyRunning);
-    }
-
-    private boolean isServiceStubAlreadyRunning() {
-        try {
-            when().get(format("http://localhost:%s/__admin", wireMockServer.port()))
-                    .then().statusCode(200);
-            return true;
-        } catch (AssertionError error) {
-            log.warn("Starting wireMockServer.. Error occurred: {}", error.getMessage());
-            return false;
-        }
-    }
-
     private void verifyAndResetMockServer() {
         if (wireMockServer != null) {
-//            wireMockServer.resetAll();
-            wireMockServer.stop();
+            wireMockServer.resetAll();
         }
     }
 }
