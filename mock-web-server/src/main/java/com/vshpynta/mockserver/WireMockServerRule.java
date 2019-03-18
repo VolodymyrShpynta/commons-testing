@@ -13,7 +13,7 @@ import org.junit.runners.model.Statement;
 
 import java.util.Map;
 
-import static com.vshpynta.mockserver.WireMockServerConfigurer.mockRequest;
+import static com.vshpynta.mockserver.WireMockServerConfigurer.stubRequests;
 import static java.util.Arrays.stream;
 
 /**
@@ -46,9 +46,8 @@ public class WireMockServerRule implements TestRule {
     private void configureMockServer(MockServerScenario serverScenario) {
         if (serverScenario != null) {
             stream(serverScenario.value())
-                    .forEach(requestToResponseMappingFile -> mockRequest(wireMockServer,
-                            requestToResponseMappingFile,
-                            placeholdersValues));
+                    .map(configFile -> RequestStubConfig.of(configFile, placeholdersValues))
+                    .forEach(requestStubConfig -> stubRequests(wireMockServer, requestStubConfig));
         }
     }
 
