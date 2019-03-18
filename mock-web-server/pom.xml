@@ -49,10 +49,9 @@
             <version>${jsonassert.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
             <scope>test</scope>
-            <version>${commons-logging.version}</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
