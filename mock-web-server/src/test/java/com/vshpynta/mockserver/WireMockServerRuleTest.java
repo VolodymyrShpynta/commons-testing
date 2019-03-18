@@ -2,6 +2,7 @@ package com.vshpynta.mockserver;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.google.common.collect.ImmutableMap;
+import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -57,6 +58,24 @@ public class WireMockServerRuleTest {
         Response response = given()
                 .contentType(JSON)
                 .body("{\"price\":1111}")
+                .when().post(format("http://localhost:%s/price/update", rule.getWireMockServer().port()));
+
+        response.then().statusCode(SC_OK);
+        String responseBody = response.getBody().asString();
+        assertThat(responseBody).isEqualTo("{\n" +
+                "    \"oldPrice\":222,\n" +
+                "    \"newPrice\":1111\n" +
+                "}");
+    }
+
+    @Test
+    @MockServerScenario("mock/servers/update-price-via-form-data.txt")
+    public void testMockServerRuleForFormData() {
+        Response response = given()
+                .contentType(ContentType.URLENC.withCharset("UTF-8"))
+                .formParam("price", 555)
+                .formParam("userId", 1111)
+                .formParam("sessionId", "AAA")
                 .when().post(format("http://localhost:%s/price/update", rule.getWireMockServer().port()));
 
         response.then().statusCode(SC_OK);

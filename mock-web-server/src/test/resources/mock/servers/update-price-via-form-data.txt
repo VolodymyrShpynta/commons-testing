@@ -1,0 +1,15 @@
+# Request
+POST /price/update HTTP/1.1
+Host: test.com
+Content-Type: application/x-www-form-urlencoded
+
+userId=1111&sessionId=AAA&price=555
+
+# Response
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "oldPrice":222,
+    "newPrice":1111
+}
